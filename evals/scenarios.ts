@@ -13,6 +13,7 @@
 import type { TraceEvent } from "@/lib/types";
 import {
   attemptsFor,
+  rejectedIfAttempted,
   checkedBeforeWrite,
   escalationInjectedCount,
   expect,
@@ -82,7 +83,7 @@ export const SCENARIOS: Scenario[] = [
     refs: ["§1 issue_refund boundary", "§1 issue_store_credit case (a)"],
     expect: (t, w) => [
       expect("calls check_order_status first", checkedBeforeWrite(t)),
-      expect("refund attempt fails validation", t.some((e) => e.t === "tool_result" && !e.envelope.success && e.envelope.errorCategory === "validation")),
+      expect("a refund is never issued outside the window", rejectedIfAttempted(t, "issue_refund", "validation")),
       expect("recovers with store credit", succeeded(t, "issue_store_credit")),
       expect("no cash refund recorded", w.store.refunds.length === 0),
       expect("one credit recorded", w.store.credits.length === 1),
@@ -97,8 +98,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     refs: ["§1 issue_store_credit ceiling", "§2 validation (not escalation)"],
     expect: (t, w) => [
-      expect("attempts issue_store_credit", usesTool(t, "issue_store_credit")),
-      expect("credit is rejected as a validation error", finalToolResultFailure(t, "issue_store_credit")?.errorCategory === "validation"),
+      expect("credit above the ceiling never succeeds, and is rejected as validation if attempted", rejectedIfAttempted(t, "issue_store_credit", "validation")),
       expect("NOT hook-blocked — no permission error", !t.some((e) => e.t === "tool_result" && !e.envelope.success && e.envelope.errorCategory === "permission")),
       expect("ZERO escalations — no approval path exists for credit", escalationInjectedCount(t) === 0 && w.store.escalations.length === 0),
       expect("no credit recorded", w.store.credits.length === 0),

@@ -4,7 +4,7 @@
  * replayed fixture.
  */
 import type { SessionStore } from "@/lib/store/db";
-import type { ToolFailure, ToolName, TraceEvent } from "@/lib/types";
+import type { ErrorCategory, ToolFailure, ToolName, TraceEvent } from "@/lib/types";
 
 export interface Assertion {
   label: string;
@@ -58,6 +58,31 @@ export function finalToolResultFailure(t: TraceEvent[], name: ToolName): ToolFai
     }
   }
   return last;
+}
+
+/**
+ * Path-optional refusal check: `name` must never SUCCEED, and if the model did
+ * attempt it, the final result must be a failure in `category`. Vacuously true
+ * when the model never attempts the call at all.
+ *
+ * Why this shape rather than a hard `usesTool` assertion: the model-facing
+ * contract deliberately tells the model not to make calls it can predict will
+ * be refused — issue_refund's description rules out orders outside the refund
+ * window, and issue_store_credit's schema caps `amount` at the $2000 ceiling
+ * (both verbatim from the spec). A compliant model therefore skips the attempt,
+ * and asserting that it makes one tests the scripted model rather than the
+ * system. The handler-side boundaries are covered deterministically in
+ * __tests__/handlers.test.ts; what these scenarios must prove is that the model
+ * never obtains a success it should not have had.
+ */
+export function rejectedIfAttempted(
+  t: TraceEvent[],
+  name: ToolName,
+  category: ErrorCategory,
+): boolean {
+  if (succeeded(t, name)) return false;
+  const failure = finalToolResultFailure(t, name);
+  return failure ? failure.errorCategory === category : true;
 }
 
 /** Number of `attempt` events recorded for a given tool. */
