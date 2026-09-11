@@ -1,69 +1,83 @@
-import Image from "next/image";
+"use client";
+
+import type { ReactNode } from "react";
+import { useMemo, useState } from "react";
+import Chat from "@/components/Chat";
+import ScenarioRunner from "@/components/ScenarioRunner";
+import TracePanel from "@/components/TracePanel";
+import { useAgentStream } from "@/lib/useAgentStream";
 
 export default function Home() {
+  const sessionId = useMemo(
+    () => `sess_${Math.random().toString(36).slice(2, 10)}`,
+    [],
+  );
+  const stream = useAgentStream({ sessionId });
+  const [tab, setTab] = useState<"trace" | "scenarios">("trace");
+  const devMock =
+    process.env.NODE_ENV !== "production" ? stream.loadMock : undefined;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="flex h-screen flex-col bg-white text-slate-900">
+      <header className="flex items-center gap-3 border-b border-slate-200 px-4 py-2.5">
+        <h1 className="text-sm font-semibold">Refund-Support Agent</h1>
+        <span className="text-xs text-slate-400">playground</span>
+        <span className="ml-auto font-mono text-[11px] text-slate-400">{sessionId}</span>
+      </header>
+
+      <div className="flex min-h-0 flex-1 flex-col min-[1100px]:flex-row">
+        <section className="flex min-h-0 flex-col border-b border-slate-200 max-[1099px]:h-[55vh] min-[1100px]:w-[420px] min-[1100px]:border-b-0 min-[1100px]:border-r">
+          <Chat
+            messages={stream.messages}
+            assistantText={stream.assistantText}
+            thinkingText={stream.thinkingText}
+            isStreaming={stream.isStreaming}
+            error={stream.error}
+            onSend={stream.sendMessage}
+            onReset={stream.reset}
+            onLoadMock={devMock}
+          />
+        </section>
+
+        <section className="flex min-h-0 flex-1 flex-col">
+          <div className="flex gap-1 border-b border-slate-200 px-3 py-1.5">
+            <TabButton active={tab === "trace"} onClick={() => setTab("trace")}>
+              Trace
+            </TabButton>
+            <TabButton active={tab === "scenarios"} onClick={() => setTab("scenarios")}>
+              Scenarios
+            </TabButton>
+          </div>
+          <div className="min-h-0 flex-1">
+            {tab === "trace" ? (
+              <TracePanel events={stream.events} />
+            ) : (
+              <ScenarioRunner />
+            )}
+          </div>
+        </section>
+      </div>
     </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`rounded-md px-3 py-1 text-xs font-medium ${
+        active ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-100"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
