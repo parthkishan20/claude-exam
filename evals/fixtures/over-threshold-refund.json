@@ -1,0 +1,159 @@
+{
+  "scenarioId": "over-threshold-refund",
+  "events": [
+    {
+      "t": "turn_start",
+      "turn": 1
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_over-threshold-refund_1_0",
+      "name": "check_order_status",
+      "input": {
+        "order_id": "ORD-7788"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_over-threshold-refund_1_0",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_over-threshold-refund_1_0",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_over-threshold-refund_1_0",
+      "ok": true,
+      "envelope": {
+        "success": true,
+        "order_id": "ORD-7788",
+        "status": "delivered",
+        "item_description": "Standing desk, 60\" walnut",
+        "amount_paid": 900,
+        "currency": "USD",
+        "purchase_date": "2026-08-24",
+        "refund_eligible": true,
+        "refund_window_days_remaining": 12,
+        "remaining_refundable": 900,
+        "non_refundable": false
+      },
+      "ms": 0
+    },
+    {
+      "t": "turn_start",
+      "turn": 2
+    },
+    {
+      "t": "text_delta",
+      "text": "This is eligible — issuing the $900 refund."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_over-threshold-refund_2_0",
+      "name": "issue_refund",
+      "input": {
+        "order_id": "ORD-7788",
+        "amount": 900,
+        "reason": "damaged"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_over-threshold-refund_2_0",
+      "ruleId": "refund_threshold",
+      "action": "block_and_escalate"
+    },
+    {
+      "t": "escalation_injected",
+      "toolUseId": "toolu_over-threshold-refund_2_0",
+      "escalationId": "ESC-4001",
+      "blockedReason": "refund_amount_exceeds_threshold"
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_over-threshold-refund_2_0",
+      "ok": false,
+      "envelope": {
+        "success": false,
+        "errorCategory": "permission",
+        "isRetryable": false,
+        "message": "Refunds above $500 require manager approval. This $900 refund has been automatically routed to a human manager — no further action is needed for this order. Tell the customer it is with a manager for approval and do not attempt another refund or a store credit for it.",
+        "details": {
+          "threshold": 500,
+          "requested_amount": 900,
+          "rule_id": "refund_threshold"
+        },
+        "escalation": {
+          "escalation_id": "ESC-4001",
+          "status": "queued",
+          "assigned_queue": "refund-approvals",
+          "eta_hours": 2,
+          "blocked_reason": "refund_amount_exceeds_threshold"
+        }
+      },
+      "ms": 1
+    },
+    {
+      "t": "turn_start",
+      "turn": 3
+    },
+    {
+      "t": "text_delta",
+      "text": "A refund of this size needs manager sign-off, so it's already been routed to a human — you don't need to do anything else."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "end_turn",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "done"
+    }
+  ],
+  "world": {
+    "store": {
+      "refunds": [],
+      "credits": [],
+      "escalations": [
+        {
+          "escalation_id": "ESC-4001",
+          "status": "queued",
+          "assigned_queue": "refund-approvals",
+          "eta_hours": 2,
+          "blocked_reason": "refund_amount_exceeds_threshold",
+          "order_id": "ORD-7788",
+          "issue_summary": "Automated issue_refund of $900 on ORD-7788 was blocked by business rule \"refund_threshold\" (refund_amount_exceeds_threshold); the amount exceeds the $500 auto-approval threshold. Customer-stated reason: damaged.",
+          "requested_action": "Review and approve or deny a $900 refund to the original payment method for ORD-7788.",
+          "urgency": "high",
+          "source": "hook",
+          "at": "2026-09-11T00:45:11.047Z"
+        }
+      ]
+    }
+  },
+  "finalText": "A refund of this size needs manager sign-off, so it's already been routed to a human — you don't need to do anything else."
+}

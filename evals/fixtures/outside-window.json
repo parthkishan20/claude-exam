@@ -1,0 +1,219 @@
+{
+  "scenarioId": "outside-window",
+  "events": [
+    {
+      "t": "turn_start",
+      "turn": 1
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_outside-window_1_0",
+      "name": "check_order_status",
+      "input": {
+        "order_id": "ORD-4521"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_outside-window_1_0",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_outside-window_1_0",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_outside-window_1_0",
+      "ok": true,
+      "envelope": {
+        "success": true,
+        "order_id": "ORD-4521",
+        "status": "delivered",
+        "item_description": "Merino wool blanket",
+        "amount_paid": 180,
+        "currency": "USD",
+        "purchase_date": "2026-06-07",
+        "refund_eligible": false,
+        "refund_window_days_remaining": 0,
+        "remaining_refundable": 180,
+        "non_refundable": false
+      },
+      "ms": 0
+    },
+    {
+      "t": "turn_start",
+      "turn": 2
+    },
+    {
+      "t": "text_delta",
+      "text": "Trying the refund."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_outside-window_2_0",
+      "name": "issue_refund",
+      "input": {
+        "order_id": "ORD-4521",
+        "amount": 180,
+        "reason": "not_as_described"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_outside-window_2_0",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_outside-window_2_0",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_outside-window_2_0",
+      "ok": false,
+      "envelope": {
+        "success": false,
+        "errorCategory": "validation",
+        "isRetryable": false,
+        "message": "Order ORD-4521 is outside its refund-eligibility window (0 days remaining), so a cash refund cannot be issued. Use issue_store_credit instead if a goodwill gesture is appropriate.",
+        "details": {
+          "field": "order_id",
+          "order_id": "ORD-4521",
+          "refund_eligible": false,
+          "non_refundable": false,
+          "refund_window_days_remaining": 0,
+          "suggested_tool": "issue_store_credit"
+        }
+      },
+      "ms": 0
+    },
+    {
+      "t": "turn_start",
+      "turn": 3
+    },
+    {
+      "t": "text_delta",
+      "text": "This order is past its refund window, but I can offer store credit instead — shall I?"
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "end_turn",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "turn_start",
+      "turn": 4
+    },
+    {
+      "t": "text_delta",
+      "text": "Applying $180 in store credit."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_outside-window_4_0",
+      "name": "issue_store_credit",
+      "input": {
+        "order_id": "ORD-4521",
+        "amount": 180,
+        "reason": "goodwill — outside refund window"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_outside-window_4_0",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_outside-window_4_0",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_outside-window_4_0",
+      "ok": true,
+      "envelope": {
+        "success": true,
+        "credit_id": "CRD-4001",
+        "account_id": "acct_1002",
+        "amount_credited": 180,
+        "new_account_balance": 205,
+        "expires_at": "2027-09-11"
+      },
+      "ms": 1
+    },
+    {
+      "t": "turn_start",
+      "turn": 5
+    },
+    {
+      "t": "text_delta",
+      "text": "$180 in store credit is on your account."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "end_turn",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "done"
+    }
+  ],
+  "world": {
+    "store": {
+      "refunds": [],
+      "credits": [
+        {
+          "credit_id": "CRD-4001",
+          "account_id": "acct_1002",
+          "order_id": "ORD-4521",
+          "amount_credited": 180,
+          "new_account_balance": 205,
+          "expires_at": "2027-09-11",
+          "at": "2026-09-11T00:45:11.048Z"
+        }
+      ],
+      "escalations": []
+    }
+  },
+  "finalText": "$180 in store credit is on your account."
+}

@@ -1,0 +1,80 @@
+{
+  "scenarioId": "unknown-order",
+  "events": [
+    {
+      "t": "turn_start",
+      "turn": 1
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_unknown-order_1_0",
+      "name": "check_order_status",
+      "input": {
+        "order_id": "ORD-0000"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_unknown-order_1_0",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_unknown-order_1_0",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_unknown-order_1_0",
+      "ok": false,
+      "envelope": {
+        "success": false,
+        "errorCategory": "validation",
+        "isRetryable": false,
+        "message": "No order found with id ORD-0000. Ask the customer to confirm the order number.",
+        "details": {
+          "field": "order_id",
+          "order_id": "ORD-0000"
+        }
+      },
+      "ms": 0
+    },
+    {
+      "t": "turn_start",
+      "turn": 2
+    },
+    {
+      "t": "text_delta",
+      "text": "I can't find an order ORD-0000 — could you double-check the number? It should look like ORD-1234."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "end_turn",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "done"
+    }
+  ],
+  "world": {
+    "store": {
+      "refunds": [],
+      "credits": [],
+      "escalations": []
+    }
+  },
+  "finalText": "I can't find an order ORD-0000 — could you double-check the number? It should look like ORD-1234."
+}

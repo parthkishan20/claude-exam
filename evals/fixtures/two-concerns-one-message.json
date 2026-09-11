@@ -1,0 +1,248 @@
+{
+  "scenarioId": "two-concerns-one-message",
+  "events": [
+    {
+      "t": "turn_start",
+      "turn": 1
+    },
+    {
+      "t": "text_delta",
+      "text": "Looking up both orders."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_two-concerns-one-message_1_0",
+      "name": "check_order_status",
+      "input": {
+        "order_id": "ORD-7788"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_two-concerns-one-message_1_0",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_two-concerns-one-message_1_0",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_two-concerns-one-message_1_0",
+      "ok": true,
+      "envelope": {
+        "success": true,
+        "order_id": "ORD-7788",
+        "status": "delivered",
+        "item_description": "Standing desk, 60\" walnut",
+        "amount_paid": 900,
+        "currency": "USD",
+        "purchase_date": "2026-08-24",
+        "refund_eligible": true,
+        "refund_window_days_remaining": 12,
+        "remaining_refundable": 900,
+        "non_refundable": false
+      },
+      "ms": 1
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_two-concerns-one-message_1_1",
+      "name": "check_order_status",
+      "input": {
+        "order_id": "ORD-1234"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_two-concerns-one-message_1_1",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_two-concerns-one-message_1_1",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_two-concerns-one-message_1_1",
+      "ok": true,
+      "envelope": {
+        "success": true,
+        "order_id": "ORD-1234",
+        "status": "delivered",
+        "item_description": "Ceramic pour-over coffee dripper",
+        "amount_paid": 120,
+        "currency": "USD",
+        "purchase_date": "2026-09-01",
+        "refund_eligible": true,
+        "refund_window_days_remaining": 20,
+        "remaining_refundable": 120,
+        "non_refundable": false
+      },
+      "ms": 1
+    },
+    {
+      "t": "turn_start",
+      "turn": 2
+    },
+    {
+      "t": "text_delta",
+      "text": "Submitting both refunds."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_two-concerns-one-message_2_0",
+      "name": "issue_refund",
+      "input": {
+        "order_id": "ORD-7788",
+        "amount": 900,
+        "reason": "damaged"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_two-concerns-one-message_2_0",
+      "ruleId": "refund_threshold",
+      "action": "block_and_escalate"
+    },
+    {
+      "t": "escalation_injected",
+      "toolUseId": "toolu_two-concerns-one-message_2_0",
+      "escalationId": "ESC-4001",
+      "blockedReason": "refund_amount_exceeds_threshold"
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_two-concerns-one-message_2_0",
+      "ok": false,
+      "envelope": {
+        "success": false,
+        "errorCategory": "permission",
+        "isRetryable": false,
+        "message": "Refunds above $500 require manager approval. This $900 refund has been automatically routed to a human manager — no further action is needed for this order. Tell the customer it is with a manager for approval and do not attempt another refund or a store credit for it.",
+        "details": {
+          "threshold": 500,
+          "requested_amount": 900,
+          "rule_id": "refund_threshold"
+        },
+        "escalation": {
+          "escalation_id": "ESC-4001",
+          "status": "queued",
+          "assigned_queue": "refund-approvals",
+          "eta_hours": 2,
+          "blocked_reason": "refund_amount_exceeds_threshold"
+        }
+      },
+      "ms": 0
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_two-concerns-one-message_2_1",
+      "name": "issue_refund",
+      "input": {
+        "order_id": "ORD-1234",
+        "amount": 120,
+        "reason": "damaged"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_two-concerns-one-message_2_1",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_two-concerns-one-message_2_1",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_two-concerns-one-message_2_1",
+      "ok": true,
+      "envelope": {
+        "success": true,
+        "refund_id": "REF-4002",
+        "order_id": "ORD-1234",
+        "amount_refunded": 120,
+        "status": "processed",
+        "estimated_days_to_reflect": 5
+      },
+      "ms": 0
+    },
+    {
+      "t": "turn_start",
+      "turn": 3
+    },
+    {
+      "t": "text_delta",
+      "text": "The $120 refund on ORD-1234 is done. The $900 refund on ORD-7788 exceeds our auto-approval limit and has been routed to a manager."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "end_turn",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "done"
+    }
+  ],
+  "world": {
+    "store": {
+      "refunds": [
+        {
+          "refund_id": "REF-4002",
+          "order_id": "ORD-1234",
+          "amount_refunded": 120,
+          "reason": "damaged",
+          "status": "processed",
+          "estimated_days_to_reflect": 5,
+          "at": "2026-09-11T00:45:15.063Z"
+        }
+      ],
+      "credits": [],
+      "escalations": [
+        {
+          "escalation_id": "ESC-4001",
+          "status": "queued",
+          "assigned_queue": "refund-approvals",
+          "eta_hours": 2,
+          "blocked_reason": "refund_amount_exceeds_threshold",
+          "order_id": "ORD-7788",
+          "issue_summary": "Automated issue_refund of $900 on ORD-7788 was blocked by business rule \"refund_threshold\" (refund_amount_exceeds_threshold); the amount exceeds the $500 auto-approval threshold. Customer-stated reason: damaged.",
+          "requested_action": "Review and approve or deny a $900 refund to the original payment method for ORD-7788.",
+          "urgency": "high",
+          "source": "hook",
+          "at": "2026-09-11T00:45:15.063Z"
+        }
+      ]
+    }
+  },
+  "finalText": "The $120 refund on ORD-1234 is done. The $900 refund on ORD-7788 exceeds our auto-approval limit and has been routed to a manager."
+}

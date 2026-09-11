@@ -1,0 +1,152 @@
+{
+  "scenarioId": "transient-retry",
+  "events": [
+    {
+      "t": "turn_start",
+      "turn": 1
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_transient-retry_1_0",
+      "name": "check_order_status",
+      "input": {
+        "order_id": "ORD-5150"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_transient-retry_1_0",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_transient-retry_1_0",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_transient-retry_1_0",
+      "ok": true,
+      "envelope": {
+        "success": true,
+        "order_id": "ORD-5150",
+        "status": "delivered",
+        "item_description": "Mechanical keyboard, tactile switches",
+        "amount_paid": 300,
+        "currency": "USD",
+        "purchase_date": "2026-09-06",
+        "refund_eligible": true,
+        "refund_window_days_remaining": 25,
+        "remaining_refundable": 300,
+        "non_refundable": false
+      },
+      "ms": 0
+    },
+    {
+      "t": "turn_start",
+      "turn": 2
+    },
+    {
+      "t": "text_delta",
+      "text": "Processing your $300 refund."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "tool_use",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "tool_use",
+      "id": "toolu_transient-retry_2_0",
+      "name": "issue_refund",
+      "input": {
+        "order_id": "ORD-5150",
+        "amount": 300,
+        "reason": "wrong_item"
+      }
+    },
+    {
+      "t": "hook_verdict",
+      "toolUseId": "toolu_transient-retry_2_0",
+      "ruleId": null,
+      "action": "allow"
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_transient-retry_2_0",
+      "n": 1,
+      "of": 2
+    },
+    {
+      "t": "attempt",
+      "toolUseId": "toolu_transient-retry_2_0",
+      "n": 2,
+      "of": 2,
+      "retryAfterMs": 2000
+    },
+    {
+      "t": "tool_result",
+      "toolUseId": "toolu_transient-retry_2_0",
+      "ok": true,
+      "envelope": {
+        "success": true,
+        "refund_id": "REF-4001",
+        "order_id": "ORD-5150",
+        "amount_refunded": 300,
+        "status": "processed",
+        "estimated_days_to_reflect": 5
+      },
+      "ms": 2006
+    },
+    {
+      "t": "turn_start",
+      "turn": 3
+    },
+    {
+      "t": "text_delta",
+      "text": "The payment gateway hiccuped once but the $300 refund went through on retry."
+    },
+    {
+      "t": "turn_end",
+      "stopReason": "end_turn",
+      "usage": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "t": "done"
+    }
+  ],
+  "world": {
+    "store": {
+      "refunds": [
+        {
+          "refund_id": "REF-4001",
+          "order_id": "ORD-5150",
+          "amount_refunded": 300,
+          "reason": "wrong_item",
+          "status": "processed",
+          "estimated_days_to_reflect": 5,
+          "at": "2026-09-11T00:45:13.055Z"
+        }
+      ],
+      "credits": [],
+      "escalations": []
+    }
+  },
+  "finalText": "The payment gateway hiccuped once but the $300 refund went through on retry."
+}
