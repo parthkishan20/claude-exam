@@ -1,0 +1,627 @@
+<title>Refund Agent Build Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --ground:    #f4f2ec;
+    --surface:   #fbfaf6;
+    --surface-2: #efece2;
+    --ink:       #211d17;
+    --ink-soft:  #5c5648;
+    --ink-faint: #8a8474;
+    --line:      #ddd7c8;
+    --line-soft: #e8e3d6;
+    --pine:      #1b5c48;
+    --pine-bg:   #e2ede8;
+    --oxide:     #a2371e;
+    --oxide-bg:  #f2e2dc;
+    --amber:     #8f6011;
+    --amber-bg:  #f0e7d3;
+
+    --measure: 40rem;
+    --rail: 8.5rem;
+    --gap: clamp(1.5rem, 4vw, 3rem);
+
+    --f-display: "Spectral", Georgia, "Times New Roman", serif;
+    --f-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:    #17150f;
+      --surface:   #1f1c14;
+      --surface-2: #26221a;
+      --ink:       #ece5d6;
+      --ink-soft:  #a8a08b;
+      --ink-faint: #7d7663;
+      --line:      #3a3524;
+      --line-soft: #302c1f;
+      --pine:      #6cc1a4;
+      --pine-bg:   #17362d;
+      --oxide:     #e58063;
+      --oxide-bg:  #3a2018;
+      --amber:     #d79c4d;
+      --amber-bg:  #352b16;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:    #17150f;
+    --surface:   #1f1c14;
+    --surface-2: #26221a;
+    --ink:       #ece5d6;
+    --ink-soft:  #a8a08b;
+    --ink-faint: #7d7663;
+    --line:      #3a3524;
+    --line-soft: #302c1f;
+    --pine:      #6cc1a4;
+    --pine-bg:   #17362d;
+    --oxide:     #e58063;
+    --oxide-bg:  #3a2018;
+    --amber:     #d79c4d;
+    --amber-bg:  #352b16;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: clamp(1rem, 0.96rem + 0.2vw, 1.075rem);
+    line-height: 1.65;
+    font-feature-settings: "kern";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: calc(var(--rail) + var(--gap) + var(--measure) + 3rem);
+    margin: 0 auto;
+    padding: clamp(2.5rem, 6vw, 5.5rem) clamp(1.25rem, 5vw, 3rem) 6rem;
+  }
+
+  /* ---- rail + column grid ---- */
+  .row {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    column-gap: var(--gap);
+    align-items: start;
+  }
+  .row + .row { margin-top: 3.25rem; }
+
+  .rail {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-top: 0.5rem;
+    position: sticky;
+    top: 1.25rem;
+  }
+  .rail b {
+    display: block;
+    font-weight: 600;
+    color: var(--pine);
+    font-size: 1.35rem;
+    letter-spacing: 0;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+    font-family: var(--f-display);
+  }
+
+  .col { min-width: 0; max-width: var(--measure); }
+
+  @media (max-width: 720px) {
+    .row { grid-template-columns: 1fr; row-gap: 0.75rem; }
+    .rail { position: static; padding-top: 0; }
+    .rail b { display: inline; margin-right: 0.5rem; }
+  }
+
+  /* ---- type ---- */
+  h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; line-height: 1.15; font-weight: 600; }
+
+  .masthead { margin-bottom: 3.5rem; }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 1.25rem;
+  }
+  h1 {
+    font-size: clamp(2.4rem, 1.7rem + 3.4vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+  .standfirst {
+    margin-top: 1.4rem;
+    font-size: clamp(1.1rem, 1rem + 0.5vw, 1.3rem);
+    color: var(--ink-soft);
+    max-width: 34rem;
+    line-height: 1.55;
+  }
+  .meta {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    font-family: var(--f-mono);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+  .meta span { color: var(--ink-soft); }
+
+  h2 {
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+    letter-spacing: -0.01em;
+    margin-bottom: 1rem;
+  }
+  h3 {
+    font-size: 1.12rem;
+    font-weight: 600;
+    margin: 2rem 0 0.5rem;
+    font-family: var(--f-body);
+    letter-spacing: -0.005em;
+  }
+  p { margin: 0 0 1rem; }
+  p + h3 { margin-top: 2.25rem; }
+  .col > p:last-child { margin-bottom: 0; }
+
+  strong { font-weight: 600; }
+  em { font-style: italic; color: var(--ink); }
+
+  a { color: var(--pine); text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+
+  code {
+    font-family: var(--f-mono);
+    font-size: 0.86em;
+    background: var(--surface-2);
+    padding: 0.1em 0.36em;
+    border-radius: 3px;
+    border: 1px solid var(--line-soft);
+    white-space: nowrap;
+  }
+
+  .lede { font-size: 1.075rem; color: var(--ink); }
+
+  ul { margin: 0 0 1rem; padding-left: 1.1rem; }
+  li { margin-bottom: 0.4rem; }
+  li::marker { color: var(--ink-faint); }
+
+  /* ---- contrast panel (advisory vs enforced) ---- */
+  .contrast {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .contrast > div { background: var(--surface); padding: 1.15rem 1.25rem; }
+  .contrast h4 {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    font-weight: 600;
+  }
+  .contrast .adv h4 { color: var(--amber); }
+  .contrast .enf h4 { color: var(--pine); }
+  .contrast p { font-size: 0.92rem; margin: 0; color: var(--ink-soft); }
+  .contrast code { font-size: 0.8em; white-space: normal; }
+  @media (max-width: 540px) { .contrast { grid-template-columns: 1fr; } }
+
+  /* ---- full-bleed bands ---- */
+  .band {
+    grid-column: 1 / -1;
+    margin: 2.5rem 0;
+    max-width: none;
+  }
+  .band-inner {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  figure { margin: 0; }
+  figure svg { width: 100%; height: auto; display: block; color: var(--ink); }
+  figcaption {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    font-family: var(--f-body);
+    max-width: 44rem;
+  }
+  figcaption b { color: var(--oxide); font-weight: 600; }
+
+  /* ---- tables ---- */
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.85rem;
+    min-width: 34rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  thead th {
+    font-family: var(--f-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td code { font-size: 0.82em; background: none; border: none; padding: 0; color: var(--ink); white-space: nowrap; }
+  .wave-table td:first-child { font-family: var(--f-mono); font-weight: 600; color: var(--pine); white-space: nowrap; }
+
+  .tick { color: var(--pine); font-weight: 600; }
+  .tilde { color: var(--amber); font-weight: 600; }
+
+  /* ---- wave cards ---- */
+  .waves { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; margin-top: 1.25rem; }
+  .wave { background: var(--surface); padding: 1.1rem 1.25rem; }
+  .wave-head { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.35rem; }
+  .wave-n { font-family: var(--f-mono); font-size: 0.72rem; font-weight: 600; color: var(--pine); letter-spacing: 0.04em; }
+  .wave-t { font-weight: 600; font-size: 0.98rem; }
+  .wave-meta { font-family: var(--f-mono); font-size: 0.72rem; color: var(--ink-faint); margin-left: auto; }
+  .wave p { font-size: 0.9rem; color: var(--ink-soft); margin: 0; }
+
+  /* ---- callout ---- */
+  .callout {
+    border-left: 3px solid var(--oxide);
+    background: var(--oxide-bg);
+    padding: 1.15rem 1.35rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1.5rem 0;
+  }
+  .callout h3 { margin: 0 0 0.5rem; font-family: var(--f-body); font-size: 0.98rem; color: var(--oxide); }
+  .callout p { font-size: 0.92rem; margin: 0 0 0.6rem; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  pre {
+    font-family: var(--f-mono);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    background: var(--surface-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 6px;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    color: var(--ink);
+  }
+  pre .c { color: var(--ink-faint); }
+  pre .k { color: var(--oxide); }
+  pre .g { color: var(--pine); }
+
+  .divider { grid-column: 1 / -1; height: 1px; background: var(--line); margin: 3.5rem 0 0; border: 0; }
+
+  hr.soft { border: 0; border-top: 1px solid var(--line-soft); margin: 1.75rem 0; }
+
+  footer {
+    grid-column: 1 / -1;
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--f-mono);
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+    line-height: 1.7;
+  }
+
+  :focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; border-radius: 2px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .col, .band { animation: rise 0.5s ease-out both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead row">
+    <div class="rail">Build report</div>
+    <div class="col">
+      <div class="eyebrow">Refund Agent · orchestration &amp; conformance</div>
+      <h1>A refund agent where the rule is enforced, not requested</h1>
+      <p class="standfirst">Four tools, one confusable pair, one programmatic hook that stops refunds over $500 — built by four agents working in parallel against a frozen contract.</p>
+      <div class="meta">
+        <div>stack <span>Next.js · TypeScript</span></div>
+        <div>agents <span>1 + 4 + integration</span></div>
+        <div>tests <span>43 unit · 9 scenarios</span></div>
+        <div>status <span>green, pending live credentials</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="row">
+    <div class="rail"><b>00</b>Thesis</div>
+    <div class="col">
+      <h2>The line the whole system is drawn around</h2>
+      <p class="lede">The spec’s own claim: a tool description that says “refunds over $500 need approval” is <em>advisory</em>. The model can read it and still emit the call. Enforcement has to be a check that runs regardless of what the model intends.</p>
+      <p>Everything in the build serves keeping those two things separate and making the difference visible — in the code, in the audit log, and in the UI.</p>
+      <div class="contrast">
+        <div class="adv">
+          <h4>Advisory — the system prompt</h4>
+          <p>“Refunds above $500 require manager approval. That approval path is handled for you, so attempt the refund exactly as the customer asked.” Guidance. The model can ignore it.</p>
+        </div>
+        <div class="enf">
+          <h4>Enforced — <code>lib/hooks/gate.ts</code></h4>
+          <p>A pure function whose only inputs are the tool name and the parsed arguments. Not the model’s intent, not the description. <code>amount &gt; 500</code> → blocked, before the handler is reached.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section class="row">
+    <div class="rail"><b>01</b>Orchestration</div>
+    <div class="col">
+      <h2>Three waves, contract-first</h2>
+      <p>Parallel agents are only safe if they cannot collide. Wave&nbsp;0 runs solo and freezes every shared type, limit, schema, and fixture. Wave&nbsp;1’s four agents then own <em>disjoint</em> file sets and build against that immutable contract. Wave&nbsp;2 integrates sequentially.</p>
+
+      <div class="waves">
+        <div class="wave">
+          <div class="wave-head"><span class="wave-n">WAVE 0</span><span class="wave-t">Contract freeze</span><span class="wave-meta">1 agent · solo</span></div>
+          <p>Scaffold + <code>types.ts</code>, <code>config.ts</code>, <code>errors.ts</code>, <code>tools/schemas.ts</code>, seven scenario fixtures, signature-correct stubs. Gate: typecheck + build clean.</p>
+        </div>
+        <div class="wave">
+          <div class="wave-head"><span class="wave-n">WAVE 1</span><span class="wave-t">Four slices in parallel</span><span class="wave-meta">4 agents · concurrent</span></div>
+          <p>Disjoint ownership is the entire safety property — see the table below.</p>
+        </div>
+        <div class="wave">
+          <div class="wave-head"><span class="wave-n">WAVE 2</span><span class="wave-t">Integrate · eval · review</span><span class="wave-meta">sequential</span></div>
+          <p>Wire the UI to the live route, build the 9-scenario suite that asserts on trace shape, run the clause-by-clause spec review.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band row">
+    <div class="rail"></div>
+    <div class="band-inner col" style="max-width:none">
+      <div class="scroll">
+        <table class="wave-table">
+          <thead>
+            <tr><th>Agent</th><th>Owns</th><th>Delivers</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A</td>
+              <td><code>lib/tools/*.ts</code></td>
+              <td>Four pure handlers over the seeded store. Every §1 boundary as a typed envelope; handlers never throw. <strong>No $500 check</strong> — that lives only in the hook, so which layer enforces it stays unambiguous.</td>
+            </tr>
+            <tr>
+              <td>B</td>
+              <td><code>lib/hooks/*</code>, <code>lib/dispatch.ts</code>, <code>lib/audit.ts</code></td>
+              <td>The rule table, the pure gate, the single dispatch choke point, the internal audit log. The centerpiece — strongest agent assigned here.</td>
+            </tr>
+            <tr>
+              <td>C</td>
+              <td><code>lib/loop.ts</code>, <code>app/api/*</code></td>
+              <td>Manual streaming agentic loop; SSE route emitting one trace event per frame; system prompt written as advice, never as enforcement.</td>
+            </tr>
+            <tr>
+              <td>D</td>
+              <td><code>app/page.tsx</code>, <code>components/*</code></td>
+              <td>Chat + live trace panel + scenario runner. <em>Blocked-by-policy</em> and <em>tool-failed</em> render as distinct states. Builds against a mock event stream, never blocks on C.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <section class="row">
+    <div class="rail"><b>02</b>Architecture</div>
+    <div class="col">
+      <h2>Every tool call passes through one gate</h2>
+      <p>There is no path from a model’s <code>tool_use</code> block to a side effect that skips <code>dispatch()</code>. The hook is the first thing it does, and on a block the real handler is <em>unreachable</em> — not merely unreached.</p>
+    </div>
+  </section>
+
+  <div class="band row">
+    <div class="rail"></div>
+    <div class="band-inner col" style="max-width:none">
+      <figure>
+        <svg viewBox="0 0 900 400" role="img" aria-label="A tool_use block enters dispatch, hits the hook gate, and branches: if a rule matches, the audit log is written and escalate_to_human is called in code, returning one permission tool_result with the escalation receipt while the real handler is never called; otherwise the retry loop calls the real handler and returns its tool_result.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="currentColor"></path>
+            </marker>
+            <marker id="ah-ox" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="var(--oxide)"></path>
+            </marker>
+          </defs>
+
+          <!-- entry -->
+          <rect x="16" y="168" width="132" height="64" rx="6" fill="var(--surface-2)" stroke="currentColor" stroke-width="1.25"></rect>
+          <text x="82" y="194" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="currentColor">tool_use</text>
+          <text x="82" y="212" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="var(--ink-soft)">from the model</text>
+
+          <line x1="148" y1="200" x2="210" y2="200" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"></line>
+
+          <!-- gate -->
+          <path d="M212 200 L250 168 L326 168 L364 200 L326 232 L250 232 z" fill="var(--pine-bg)" stroke="var(--pine)" stroke-width="1.5"></path>
+          <text x="288" y="196" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="currentColor">runHook()</text>
+          <text x="288" y="212" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="var(--ink-soft)">name + args only</text>
+
+          <!-- to blocked branch -->
+          <path d="M288 168 L288 96 L430 96" fill="none" stroke="var(--oxide)" stroke-width="1.75" marker-end="url(#ah-ox)"></path>
+          <text x="300" y="86" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--oxide)">rule matches — amount &gt; 500</text>
+
+          <!-- to allow branch -->
+          <path d="M288 232 L288 304 L430 304" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"></path>
+          <text x="300" y="324" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-soft)">allow</text>
+
+          <!-- BLOCKED branch -->
+          <rect x="432" y="66" width="196" height="60" rx="6" fill="var(--oxide-bg)" stroke="var(--oxide)" stroke-width="1.25"></rect>
+          <text x="530" y="90" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">logAuditEvent()</text>
+          <text x="530" y="108" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="var(--ink-soft)">full detail · internal only</text>
+
+          <line x1="628" y1="96" x2="672" y2="96" stroke="var(--oxide)" stroke-width="1.5" marker-end="url(#ah-ox)"></line>
+
+          <rect x="674" y="66" width="210" height="60" rx="6" fill="var(--oxide-bg)" stroke="var(--oxide)" stroke-width="1.25"></rect>
+          <text x="779" y="90" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">escalate_to_human()</text>
+          <text x="779" y="108" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="var(--ink-soft)">called here, in code</text>
+
+          <!-- blocked result -->
+          <path d="M779 126 L779 168 L628 168" fill="none" stroke="var(--oxide)" stroke-width="1.5" marker-end="url(#ah-ox)"></path>
+          <rect x="432" y="150" width="196" height="66" rx="6" fill="var(--surface-2)" stroke="var(--oxide)" stroke-width="1.25"></rect>
+          <text x="530" y="176" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">one tool_result</text>
+          <text x="530" y="194" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="var(--ink-soft)">permission error</text>
+          <text x="530" y="208" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="var(--ink-soft)">+ escalation receipt</text>
+
+          <!-- handler never called -->
+          <rect x="432" y="344" width="196" height="44" rx="6" fill="none" stroke="var(--ink-faint)" stroke-width="1.25" stroke-dasharray="4 4"></rect>
+          <text x="530" y="364" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-faint)">HANDLERS.issue_refund</text>
+          <text x="530" y="379" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="var(--ink-faint)">never reached on a block</text>
+          <path d="M500 216 L500 344" fill="none" stroke="var(--ink-faint)" stroke-width="1.25" stroke-dasharray="4 4"></path>
+          <line x1="486" y1="274" x2="514" y2="286" stroke="var(--oxide)" stroke-width="1.75"></line>
+          <line x1="486" y1="286" x2="514" y2="274" stroke="var(--oxide)" stroke-width="1.75"></line>
+
+          <!-- ALLOW branch -->
+          <rect x="432" y="278" width="150" height="52" rx="6" fill="var(--surface-2)" stroke="currentColor" stroke-width="1.25"></rect>
+          <text x="507" y="299" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">retry loop</text>
+          <text x="507" y="315" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="var(--ink-soft)">≤2 · transient only</text>
+
+          <line x1="582" y1="304" x2="628" y2="304" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"></line>
+          <rect x="630" y="278" width="180" height="52" rx="6" fill="var(--surface-2)" stroke="currentColor" stroke-width="1.25"></rect>
+          <text x="720" y="299" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">real handler</text>
+          <text x="720" y="315" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="var(--ink-soft)">moves the money</text>
+        </svg>
+        <figcaption><b>The blocked path never touches the handler.</b> A system-driven redirect can’t fabricate a <code>tool_use</code> block — two consecutive assistant turns are invalid. So the dispatcher runs <code>escalate_to_human</code> itself and returns one <code>tool_result</code> carrying the permission error <em>and</em> the escalation receipt. The model is told the escalation already happened; it never decides to escalate.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <section class="row">
+    <div class="rail"><b>03</b>The trap</div>
+    <div class="col">
+      <div class="callout">
+        <h3>The one thing most likely to be built wrong</h3>
+        <p>The instinct is to have the hook “inject” a synthetic <code>escalate_to_human</code> tool call into the transcript. That produces two assistant turns in a row — invalid in the Messages API — and it misreports provenance: the model never emitted that block.</p>
+        <p>Correct shape: the dispatcher calls the handler in code and returns a single <code>tool_result</code> for the blocked <code>issue_refund</code> id. A distinct <code>escalation_injected</code> trace event — not a fake <code>tool_use</code> — tells the UI the system did it.</p>
+      </div>
+      <pre><span class="c">// tool_result content for the blocked issue_refund call, is_error: true</span>
+{
+  <span class="k">"success"</span>: false,
+  <span class="k">"errorCategory"</span>: <span class="g">"permission"</span>,
+  <span class="k">"isRetryable"</span>: false,
+  <span class="k">"message"</span>: <span class="g">"Refunds above $500 require manager approval.
+              Routed to a human — no further action needed."</span>,
+  <span class="k">"details"</span>: { <span class="k">"threshold"</span>: 500, <span class="k">"requested_amount"</span>: 900,
+              <span class="k">"rule_id"</span>: <span class="g">"refund_threshold"</span> },
+  <span class="k">"escalation"</span>: { <span class="k">"escalation_id"</span>: <span class="g">"ESC-4001"</span>, <span class="k">"status"</span>: <span class="g">"queued"</span>,
+                 <span class="k">"assigned_queue"</span>: <span class="g">"refund-approvals"</span>,
+                 <span class="k">"blocked_reason"</span>: <span class="g">"refund_amount_exceeds_threshold"</span> }
+}</pre>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section class="row">
+    <div class="rail"><b>04</b>The asymmetry</div>
+    <div class="col">
+      <h2>Blocked and rejected are different outcomes</h2>
+      <p>The spec makes <code>issue_refund</code> and <code>issue_store_credit</code> deliberately confusable — same input shape — and gives them opposite governance. Both money limits live side by side in <code>lib/config.ts</code>, commented, because the difference is the point.</p>
+      <div class="contrast">
+        <div class="enf">
+          <h4>Refund over $500 → blocked + escalated</h4>
+          <p>Cash leaves the business and a human approval path exists. The hook blocks the call and routes it. Recoverable via a manager.</p>
+        </div>
+        <div class="adv">
+          <h4>Store credit over $2000 → rejected</h4>
+          <p>No cash moves and <em>no approval path exists</em> for credit. The handler returns a plain validation error. Nothing to escalate — the only remedy is a smaller amount.</p>
+        </div>
+      </div>
+      <p style="margin-top:1.25rem">Scenario&nbsp;4 asserts a $2500 credit produces zero escalations; scenario&nbsp;5 asserts “I want my money back” on a $900 order stays a refund and gets escalated rather than dodging to credit.</p>
+    </div>
+  </section>
+
+  <section class="row">
+    <div class="rail"><b>05</b>Conformance</div>
+    <div class="col">
+      <h2>Every spec clause, mapped</h2>
+      <p>Full table in <code>docs/spec-conformance.md</code>. <span class="tick">✓</span> implemented · <span class="tilde">~</span> implemented with a noted deviation.</p>
+    </div>
+  </section>
+
+  <div class="band row">
+    <div class="rail"></div>
+    <div class="band-inner col" style="max-width:none">
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Clause</th><th>Where</th><th>Pinned by</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>Read-only <code>check_order_status</code>, never gated</td><td><code>tools/checkOrderStatus.ts</code></td><td>handler + hook tests</td><td class="tick">✓</td></tr>
+            <tr><td><code>check</code> success fields</td><td>same</td><td>handlers test</td><td class="tilde">~ adds <code>remaining_refundable</code> so the agent picks a valid amount without a second call</td></tr>
+            <tr><td>amount &gt; refundable balance → validation, <code>max_allowed</code> in details</td><td><code>tools/issueRefund.ts</code></td><td>partial-refund <code>ORD-3300</code></td><td class="tick">✓</td></tr>
+            <tr><td>outside window → validation, message points to <code>issue_store_credit</code></td><td>same</td><td>scenario 3</td><td class="tick">✓</td></tr>
+            <tr><td>refund &gt; $500 → blocked by hook, escalated</td><td><code>hooks/rules.ts</code> · <code>dispatch.ts</code></td><td>scenarios 2, 5 · hook test</td><td class="tick">✓</td></tr>
+            <tr><td>no $500 logic in the refund handler</td><td><code>issueRefund.ts</code></td><td>test: $900 succeeds at handler layer</td><td class="tick">✓ single-layer enforcement</td></tr>
+            <tr><td>credit &gt; $2000 → validation, <em>not</em> escalation</td><td><code>tools/issueStoreCredit.ts</code></td><td>scenario 4 · hook test</td><td class="tick">✓</td></tr>
+            <tr><td>failures returned as <code>tool_result</code>, never thrown</td><td>every handler + <code>dispatch</code> guard</td><td>handler tests</td><td class="tick">✓</td></tr>
+            <tr><td><code>transient</code> → retry w/ backoff, cap 2, then surface, never loop</td><td><code>dispatch.ts</code> retry + guard</td><td>scenarios 6a / 6b</td><td class="tick">✓</td></tr>
+            <tr><td>hook intercepts every <code>tool_use</code> before the handler</td><td><code>dispatch.ts</code></td><td>test: <code>refunds.length === 0</code> on block</td><td class="tick">✓</td></tr>
+            <tr><td>audit log full detail, model-facing error redacted</td><td><code>audit.ts</code> vs <code>errors.ts</code></td><td>redaction-boundary test</td><td class="tick">✓</td></tr>
+            <tr><td>system-driven redirect for <code>refund_threshold</code></td><td><code>dispatch.ts</code> · <code>blockAndEscalate</code></td><td>scenario 2</td><td class="tick">✓</td></tr>
+            <tr><td><code>blocked_reason</code> hook-populated only</td><td>stripped from model schema; stamped by handler</td><td>scenario 2 asserts <code>source: "hook"</code></td><td class="tick">✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <section class="row">
+    <div class="rail"><b>06</b>Run it</div>
+    <div class="col">
+      <h3>Verify</h3>
+      <pre>npm run typecheck        <span class="c"># tsc --noEmit</span>
+npm test                 <span class="c"># 43 unit tests — handlers + hook, no API</span>
+npm run eval             <span class="c"># 9 scenarios; live if creds, else scripted</span>
+REPLAY=1  npm run eval   <span class="c"># scripted model, real backend, offline</span>
+FIXTURES=1 npm run eval  <span class="c"># replay recorded traces</span></pre>
+      <h3>See the hook is real</h3>
+      <p>Send <em>“I need a $900 refund on ORD-7788, it arrived damaged”</em> and watch the trace: <code>issue_refund</code> attempted → <strong>blocked by <code>refund_threshold</code></strong> → escalation injected by the system. Then edit the system prompt to say refunds are unlimited and re-run — still blocked. That is the whole thesis, demonstrated.</p>
+      <h3>Open items</h3>
+      <ul>
+        <li><strong>No Anthropic credentials in the build environment.</strong> Typecheck, tests, build and the offline eval path are green. The live agent (<code>lib/loop.ts</code>, <code>/api/chat</code>) is complete and SSE-smoke-tested; set <code>ANTHROPIC_API_KEY</code> or run <code>ant auth login</code>, then <code>RECORD=1 LIVE=1 npm run eval</code> to regenerate fixtures from the real model.</li>
+        <li><strong>Next.js 16</strong>, not 15 — <code>create-next-app@latest</code>. App Router API used is identical.</li>
+        <li>Offline evals use a <strong>scripted stand-in for the model</strong>; the real hook, dispatcher, handlers, retry and audit all run.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="row">
+    <div class="rail"></div>
+    <div class="col" style="max-width:none">
+      Wave 0 → contract freeze · Wave 1 → tools · hook · loop · UI (parallel) · Wave 2 → integrate · eval · review<br>
+      docs/orchestration-plan.md · docs/spec-conformance.md · docs/refund-agent-spec.md
+    </div>
+  </footer>
+
+</div>
