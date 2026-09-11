@@ -131,6 +131,7 @@ const SCENARIOS: Scenario[] = [
   },
   {
     id: "money-back-big",
+    apiId: "money-back-big-order",
     title: "Money-back on a big order",
     prompt: "I want my money back for ORD-7788",
     expects: "routed to issue_refund (cash), which the hook blocks + escalates — not store credit.",
