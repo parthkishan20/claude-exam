@@ -40,5 +40,13 @@ export const LIMITS = {
 export const RETRY_MODE: "system" | "agent" =
   process.env.RETRY_MODE === "agent" ? "agent" : "system";
 
-export const MODEL = process.env.REFUND_AGENT_MODEL ?? "claude-opus-5";
+/**
+ * Sonnet tier — ~5x cheaper input / ~1.7x cheaper output than Opus 5
+ * ($3/$15 vs $5/$25 per MTok). Every Sonnet tier is priced the same, so
+ * "cheapest Sonnet" comes down to which one still works with the codebase:
+ * `claude-sonnet-4-6` is the oldest that supports `thinking: {type:"adaptive"}`
+ * (Sonnet 4 / 4.5 need the removed `budget_tokens` form; Sonnet 3.x is retired).
+ * For genuinely minimal cost, `claude-haiku-4-5` is $1/$5.
+ */
+export const MODEL = process.env.REFUND_AGENT_MODEL ?? "claude-sonnet-4-6";
 export const MAX_TOKENS = 64000;

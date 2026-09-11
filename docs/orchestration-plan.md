@@ -18,7 +18,7 @@ The build is decomposed into **three waves of subagents**: one solo contract-fre
 |---|---|---|
 | Stack | Next.js 15 App Router, TypeScript, one repo | One language, no cross-process contract; Route Handler streams SSE |
 | Agent loop | Manual streaming loop (`client.messages.stream()` + `finalMessage()`) | The hook must intercept every `tool_use` *before* dispatch — a hand-written loop makes that choke point explicit and auditable |
-| Model | `claude-opus-5`, `thinking: {type:"adaptive", display:"summarized"}`, `max_tokens: 64000` | Summarized thinking feeds the trace panel; streaming required at that `max_tokens` |
+| Model | `claude-sonnet-4-6` (Sonnet tier, cost), `thinking: {type:"adaptive", display:"summarized"}`, `max_tokens: 64000` | Summarized thinking feeds the trace panel; streaming required at that `max_tokens`. Override with `REFUND_AGENT_MODEL`. |
 | Redirect philosophy | **System-driven** for `refund_threshold` | Spec §3 — hard financial threshold, no model discretion |
 | Transient retries | **System-driven, 2 attempts**, with an `agent` mode behind a flag | Same reasoning as the hook; the flag lets the UI demo both and measure the difference empirically |
 | Limits | Both in `lib/config.ts`, env-overridable | The $500-block vs $2000-reject asymmetry is the point — keep the two numbers adjacent and commented |
