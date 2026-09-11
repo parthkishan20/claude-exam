@@ -1,17 +1,27 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Chat from "@/components/Chat";
 import ScenarioRunner from "@/components/ScenarioRunner";
 import TracePanel from "@/components/TracePanel";
 import { useAgentStream } from "@/lib/useAgentStream";
 
+/**
+ * A fixed placeholder, identical on the server render and the client's first
+ * render — Math.random() (or Date.now()) here would diverge between the two
+ * and trigger a hydration mismatch. The real random id is assigned in a
+ * useEffect, which only ever runs client-side, then the swap is a normal
+ * post-hydration re-render. No request goes out before that swap — every
+ * network call is user-triggered (send/reset), never on mount.
+ */
+const PENDING_SESSION_ID = "sess_pending";
+
 export default function Home() {
-  const sessionId = useMemo(
-    () => `sess_${Math.random().toString(36).slice(2, 10)}`,
-    [],
-  );
+  const [sessionId, setSessionId] = useState(PENDING_SESSION_ID);
+  useEffect(() => {
+    setSessionId(`sess_${Math.random().toString(36).slice(2, 10)}`);
+  }, []);
   const stream = useAgentStream({ sessionId });
   const [tab, setTab] = useState<"trace" | "scenarios">("trace");
   const devMock =
