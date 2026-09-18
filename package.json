@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test \"__tests__/**/*.test.ts\"",
     "eval": "tsx evals/run.ts",
     "build:static": "node scripts/build-static.mjs",
