@@ -28,6 +28,36 @@ act 2 is performed by the same pure function that performs it in production.
 See `docs/demo-guide.md` for the running order, the keyboard map, and how to
 answer "isn't the model just told to do that?" on the spot.
 
+## Publish it
+
+The demo runs as a static site with no server — that is what makes it hostable
+on GitHub Pages.
+
+```bash
+npm run build:static                                   # -> ./out
+NEXT_PUBLIC_BASE_PATH=/claude-exam npm run build:static # project site sub-path
+```
+
+Pushing to `main` builds and deploys it via `.github/workflows/deploy-pages.yml`.
+One-time repository setup: **Settings -> Pages -> Source: GitHub Actions**.
+
+What the static build does differently, and why it is still honest:
+
+- Each act's run is generated at build time by `scripts/generateDemoRuns.ts`,
+  through the same `runScripted` + `scenario.expect()` pair the API route and
+  `npm run eval` use. The hook, dispatcher, retry policy, handlers and store all
+  really execute — at build time rather than per request. Replay is
+  deterministic, which is what makes moving it earlier a substitution rather
+  than a re-enactment. The build refuses to publish an act whose assertions fail.
+- `app/api` is moved aside for the export (every route is `force-dynamic`, which
+  `output: "export"` rejects) and restored afterwards. `lib/demo/source.ts` is
+  the only module that knows which host it is on.
+- **Live mode is impossible there and is disabled, not hidden.** A static site
+  has no server to hold a key, and a key shipped to one would be public. No
+  secret is used by the workflow.
+- The chat playground at `/` needs a server, so the hosted copy says so and
+  points at the demo.
+
 ## Run it
 
 ```bash

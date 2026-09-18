@@ -1,0 +1,80 @@
+# Builds the static demo and publishes it to GitHub Pages.
+#
+# One-time setup in the repository: Settings -> Pages -> Build and deployment ->
+# Source: "GitHub Actions". Nothing else is needed, and no secrets are used —
+# the published site has no server and therefore never holds an API key. The
+# demo's traces are generated at build time from the real hook, dispatcher and
+# handlers by scripts/generateDemoRuns.ts.
+name: Deploy demo to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Lets you publish without pushing, from the Actions tab.
+  workflow_dispatch:
+
+# Least privilege: read the repo, write a Pages deployment, and prove identity
+# to the deploy action. Nothing else.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# A queued run waits for the in-flight one rather than cancelling it, so a
+# half-finished deployment never becomes the live site.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # The gates that protect the demo. The static build refuses to publish an
+      # act whose assertions fail, but running these first means a failure is
+      # reported as "the tests broke", not as "the export broke".
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Scenario evals (offline)
+        run: npm run eval
+        env:
+          REPLAY: "1"
+
+      - uses: actions/configure-pages@v5
+        id: pages
+
+      # A project site lives at https://<user>.github.io/<repo>, so every asset
+      # and link needs that prefix. `configure-pages` works out the real base
+      # path, including the empty one for a user site or a custom domain.
+      - name: Build static site
+        run: npm run build:static
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

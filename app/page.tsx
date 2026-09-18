@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import Chat from "@/components/Chat";
+import { IS_STATIC } from "@/lib/demo/source";
 import ScenarioRunner from "@/components/ScenarioRunner";
 import TracePanel from "@/components/TracePanel";
 import { useAgentStream } from "@/lib/useAgentStream";
@@ -41,6 +42,27 @@ export default function Home() {
         </Link>
         <span className="font-mono text-[11px] text-slate-400">{sessionId}</span>
       </header>
+
+      {/*
+        On the static build (GitHub Pages) there is no server, so this
+        playground's chat and scenario endpoints do not exist. Saying so plainly
+        beats letting a visitor click Send and conclude the project is broken —
+        and the guided demo beside it is fully functional there.
+      */}
+      {IS_STATIC ? (
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-900">
+          <span className="font-semibold">This is a static copy.</span>
+          <span className="text-amber-800">
+            The live chat needs a server to reach the Anthropic API, so it is inert here.
+          </span>
+          <Link href="/demo" className="font-medium underline underline-offset-2 hover:text-amber-950">
+            The guided demo works in full &rarr;
+          </Link>
+          <span className="text-amber-700">
+            Run the chat locally with <code className="font-mono">npm run dev</code>.
+          </span>
+        </div>
+      ) : null}
 
       <div className="flex min-h-0 flex-1 flex-col min-[1100px]:flex-row">
         <section className="flex min-h-0 flex-col border-b border-slate-200 max-[1099px]:h-[55vh] min-[1100px]:w-[420px] min-[1100px]:border-b-0 min-[1100px]:border-r">

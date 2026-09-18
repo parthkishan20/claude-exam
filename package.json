@@ -8,7 +8,9 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test \"__tests__/**/*.test.ts\"",
-    "eval": "tsx evals/run.ts"
+    "eval": "tsx evals/run.ts",
+    "build:static": "node scripts/build-static.mjs",
+    "demo:runs": "tsx scripts/generateDemoRuns.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.125.0",

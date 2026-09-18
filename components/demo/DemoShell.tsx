@@ -12,6 +12,7 @@
  * have to hunt for a control mid-sentence, and the transport must stay put.
  */
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { IS_STATIC } from "@/lib/demo/source";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AssertionChecklist from "@/components/demo/AssertionChecklist";
 import FlowDiagram from "@/components/demo/FlowDiagram";
@@ -41,6 +42,16 @@ const NO_EVENTS: TraceEvent[] = [];
  */
 const REPLAY_NOTE =
   "Replay scripts the model's turn only. The hook, the retries, the handlers and the store are the shipping code.";
+
+/**
+ * Why Live is off. The two hosts are unavailable for different reasons and a
+ * presenter may well be asked which one applies: a static export (GitHub Pages)
+ * has no server to hold a key or call the API from, whereas a server build
+ * simply has not been given a key.
+ */
+const LIVE_UNAVAILABLE = IS_STATIC
+  ? "Live is unavailable on this hosted copy: it is a static site with no server to call the API from."
+  : "Live is unavailable: the server has no ANTHROPIC_API_KEY.";
 
 export default function DemoShell({ initialActId }: { initialActId: string | null }) {
   const router = useRouter();
@@ -307,7 +318,7 @@ export default function DemoShell({ initialActId }: { initialActId: string | nul
                 className="max-w-[26rem] text-right text-[11px] leading-snug"
                 style={{ color: "var(--stage-ink-3)" }}
               >
-                {live ? REPLAY_NOTE : `${REPLAY_NOTE} Live is unavailable: the server has no ANTHROPIC_API_KEY.`}
+                {live ? REPLAY_NOTE : `${REPLAY_NOTE} ${LIVE_UNAVAILABLE}`}
               </p>
             )}
           </div>
@@ -500,7 +511,7 @@ function ModeToggle({
               disabled={off}
               title={
                 off
-                  ? "Live needs ANTHROPIC_API_KEY on the server"
+                  ? (IS_STATIC ? "Live needs a server — this is a static site" : "Live needs ANTHROPIC_API_KEY on the server")
                   : m === "live" && downgraded
                     ? "The last live run fell back to replay. Press to try it again."
                     : undefined
@@ -640,7 +651,7 @@ function ShortcutsOverlay({ onClose, live }: { onClose: () => void; live: boolea
         >
           {REPLAY_NOTE} A blocked refund in replay is blocked by the same pure function that
           blocks it in production.
-          {live ? "" : " Live mode is unavailable here: the server has no ANTHROPIC_API_KEY."}
+          {live ? "" : ` ${LIVE_UNAVAILABLE}`}
         </p>
         <button ref={closeRef} type="button" className="demo-btn mt-6" onClick={onClose}>
           Close

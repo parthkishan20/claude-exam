@@ -46,6 +46,25 @@ Deep-link straight to an act: `/demo?act=over-threshold-refund`.
 
 ---
 
+## Presenting from the hosted copy
+
+Pushing to `main` publishes the demo to GitHub Pages, so you can send a link
+instead of asking a room to trust a laptop.
+
+The hosted copy is the same five acts, the same traces and the same assertions.
+Two differences, both stated on the screen itself:
+
+- **Live is disabled.** There is no server behind a static site, so there is
+  nowhere to hold an API key — and a key shipped to one would be public. Replay
+  is the honest default anyway.
+- **The chat playground at `/` is inert.** It needs a server to reach the API.
+  The hosted page says so and links to the demo.
+
+If the venue's wifi is unreliable, present from `npm run build && npm start`
+locally instead. Identical screen, nothing over the network.
+
+---
+
 ## Running order
 
 | # | Act | Scenario | Time |

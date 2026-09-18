@@ -1,0 +1,5 @@
+{
+  "//": "Type config for the STATIC EXPORT build only (scripts/build-static.mjs). That build moves app/api aside, so anything importing a route handler cannot resolve — which is the tests, legitimately. Type checking stays ON for everything that actually ships; the complete tree, tests included, is checked by `npm run typecheck`.",
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "__tests__", "evals/run.ts", "scripts"]
+}

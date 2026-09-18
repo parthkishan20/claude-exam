@@ -3,10 +3,11 @@
 /**
  * useDemoRun — the data side of Demo Mode: the act list, and one run per act.
  *
- * `GET /api/demo` returns the agenda (the acts, plus whether a live run is even
- * possible on this machine — no API key, no live mode). `POST /api/demo` runs
- * one act and returns its whole DemoRun, trace included; usePlayback does the
- * revealing from there.
+ * The agenda (the acts, plus whether a live run is even possible on this host)
+ * and one whole DemoRun per act, trace included; usePlayback does the revealing
+ * from there. WHERE those come from is lib/demo/source.ts's problem, not this
+ * hook's: `/api/demo` when there is a server, prebuilt JSON when the site is a
+ * static export. Everything below is identical either way.
  *
  * Everything here exists for one situation: a presenter mid-talk who jumps back
  * to act 2 to answer a question. That jump has to be instant and free, so runs
@@ -15,29 +16,13 @@
  * navigated away from is aborted rather than left to land on a dead act.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { fetchIndex, fetchRun, IS_STATIC } from "@/lib/demo/source";
 import type { DemoAct, DemoMode, DemoRun } from "@/lib/demo/types";
 
-const ENDPOINT = "/api/demo";
+/** Only used in error copy, so the message names something the reader can check. */
+const SOURCE_LABEL = IS_STATIC ? "the prebuilt demo data" : "/api/demo";
 
 const cacheKey = (actId: string, mode: DemoMode): string => `${actId}:${mode}`;
-
-/** Fetch one run. Throws a message that is already fit to show on a screen. */
-async function fetchRun(
-  actId: string,
-  mode: DemoMode,
-  signal?: AbortSignal,
-): Promise<DemoRun> {
-  const res = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ actId, mode }),
-    signal,
-  });
-  if (!res.ok) {
-    throw new Error(`Could not load this act — ${ENDPOINT} responded ${res.status}.`);
-  }
-  return (await res.json()) as DemoRun;
-}
 
 function messageFor(err: unknown, fallback: string): string {
   return err instanceof Error && err.message ? err.message : fallback;
@@ -88,19 +73,17 @@ export function useDemoRun(): DemoRunController {
     const ac = new AbortController();
     (async () => {
       try {
-        const res = await fetch(ENDPOINT, { signal: ac.signal });
-        if (!res.ok) {
-          throw new Error(`Demo acts unavailable — ${ENDPOINT} responded ${res.status}.`);
-        }
-        const body = (await res.json()) as { acts?: DemoAct[]; live?: boolean };
+        const body = await fetchIndex(ac.signal);
         if (!Array.isArray(body.acts)) {
-          throw new Error(`${ENDPOINT} returned no acts.`);
+          throw new Error(`${SOURCE_LABEL} returned no acts.`);
         }
         setActs(body.acts);
-        setLive(body.live === true);
+        // A static export has no server to hold a key, so live is never
+        // possible there and the index says so outright.
+        setLive(!IS_STATIC && body.live === true);
       } catch (err) {
         if (ac.signal.aborted) return;
-        setError(messageFor(err, `Could not reach ${ENDPOINT}.`));
+        setError(messageFor(err, `Could not reach ${SOURCE_LABEL}.`));
       } finally {
         if (!ac.signal.aborted) setActsLoading(false);
       }
@@ -145,7 +128,7 @@ export function useDemoRun(): DemoRunController {
       } catch (err) {
         // An abort is the presenter moving on, not a failure to report.
         if (ac.signal.aborted) return;
-        setError(messageFor(err, `Could not reach ${ENDPOINT}.`));
+        setError(messageFor(err, `Could not reach ${SOURCE_LABEL}.`));
       } finally {
         if (!ac.signal.aborted) setRunLoading(false);
       }

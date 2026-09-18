@@ -2,9 +2,13 @@
  * /demo - presenter-driven walkthrough of the refund agent.
  *
  * The act lives in the URL (`/demo?act=<id>`) so a presenter can reload or
- * link straight into one. `searchParams` is a promise in this version, and
- * reading it opts the route into dynamic rendering, which is what we want:
- * there is nothing here worth prerendering.
+ * link straight into one. That query is read on the CLIENT, by DemoShell's
+ * `useSearchParams` — deliberately, not incidentally. Reading `searchParams`
+ * here would opt the route into dynamic rendering, and this route has to be
+ * able to prerender: the static export (GitHub Pages) has no server to render
+ * it on. Nothing is lost, because a query string is not part of a static
+ * host's file lookup anyway — `/demo/?act=x` and `/demo/` are one file, and
+ * the client picks the act out of the URL either way.
  */
 import { Suspense } from "react";
 import type { Metadata } from "next";
@@ -16,19 +20,15 @@ export const metadata: Metadata = {
     "A five-act walkthrough of the refund agent: the hook gate, the retry policy, the handlers and the store, one trace event at a time.",
 };
 
-export default async function DemoPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const act = (await searchParams).act;
-  const initialActId = typeof act === "string" && act.length > 0 ? act : null;
-
+export default function DemoPage() {
   return (
-    // DemoShell reads the live search params on the client (back / forward
-    // still change acts), which needs a Suspense boundary above it.
+    // DemoShell reads the search params on the client (so back / forward still
+    // change acts), which needs a Suspense boundary above it. `initialActId` is
+    // null because there is no server-side read to seed it with — the client's
+    // own `useSearchParams` is the only source, and it has the real value
+    // before the first act is ever fetched.
     <Suspense fallback={<DemoBoot />}>
-      <DemoShell initialActId={initialActId} />
+      <DemoShell initialActId={null} />
     </Suspense>
   );
 }
