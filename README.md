@@ -9,6 +9,25 @@ Four tools (`check_order_status`, `issue_refund`, `issue_store_credit`,
 and a programmatic hook that blocks refunds over $500 and routes them to a human
 **regardless of what the model intends**.
 
+## Show it
+
+```bash
+npm run dev        # http://localhost:3000/demo
+```
+
+`/demo` is a guided, keyboard-driven walkthrough for an audience — five acts,
+about 5m40s, no API key needed and no network calls. Each act replays one
+scenario from `evals/scenarios.ts` one trace event at a time, with narration
+pinned to positions in the trace, a pipeline diagram showing where the call
+actually stopped, and the same assertions `npm run eval` checks.
+
+Replay scripts the **model's turn only**. The hook, the retry policy, the
+handlers and the store are the shipping code, running for real — so the block in
+act 2 is performed by the same pure function that performs it in production.
+
+See `docs/demo-guide.md` for the running order, the keyboard map, and how to
+answer "isn't the model just told to do that?" on the spot.
+
 ## Run it
 
 ```bash
@@ -52,13 +71,18 @@ lib/
   store/             seeded in-memory fixtures, one order per scenario
 app/
   page.tsx           chat + trace panel + scenario runner
+  demo/              the presentation stage (five acts, playback, narration)
   api/chat           SSE: one TraceEvent per frame
   api/scenarios      server-side scenario runs with canonical assertions
+  api/demo           one act, replayed or live, as a DemoRun
+lib/demo/            acts + narration anchors + the playhead
+components/demo/     flow diagram, trace stage, checklist, store ledger
 evals/               scenarios.ts + assertions + scripted model + harness
 docs/
   refund-agent-spec.md    the spec
   orchestration-plan.md   how this was built (3 waves of agents)
   spec-conformance.md     clause-by-clause review
+  demo-guide.md           presenting /demo: running order, keys, hard questions
 ```
 
 ## The one thing worth understanding

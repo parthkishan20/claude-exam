@@ -1,0 +1,262 @@
+/*
+ * Stage tokens for /demo.
+ *
+ * Scoped to .demo-root rather than :root so globals.css keeps owning the rest
+ * of the app. The demo screen is dark-locked on purpose: it is built to be
+ * projected in a darkened room, where the app's light theme would blow out.
+ *
+ * Radius rule (one system, applied everywhere):
+ *   surfaces and controls -> var(--r)
+ *   hairline indicators (playhead, progress fill, accent bars) -> square
+ * Accent rule: one accent, --signal, used for "the thing happening now".
+ * --alarm is reserved for genuine failure states and appears nowhere else.
+ */
+.demo-root {
+  --stage-bg: #0b0d11;
+  --stage-panel: #12161c;
+  --stage-raise: #171c24;
+  --stage-line: #242c38;
+  --stage-line-soft: #1a212a;
+  --stage-ink: #eef2f7;
+  --stage-ink-2: #9aa5b5;
+  --stage-ink-3: #5f6a79;
+  --signal: #f2a93b;
+  --signal-soft: rgba(242, 169, 59, 0.13);
+  --alarm: #e2705e;
+  --r: 6px;
+
+  color-scheme: dark;
+  background: var(--stage-bg);
+  color: var(--stage-ink);
+}
+
+/* A surface. Borders, not shadows: shadows disappear under a projector. */
+.demo-panel {
+  background: var(--stage-panel);
+  border: 1px solid var(--stage-line-soft);
+  border-radius: var(--r);
+}
+
+/* Keycap. Small by design: the presenter needs it, the audience does not. */
+.demo-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0 0.3rem;
+  height: 1.15rem;
+  border: 1px solid var(--stage-line);
+  border-bottom-width: 2px;
+  border-radius: var(--r);
+  background: var(--stage-raise);
+  color: var(--stage-ink-3);
+  font-size: 10px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Transport buttons. Word labels rather than glyphs: readable from row 20. */
+.demo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--stage-line);
+  border-radius: var(--r);
+  background: var(--stage-raise);
+  color: var(--stage-ink);
+  padding: 0.5rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 90ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.demo-btn:hover:not(:disabled) {
+  background: #1d232c;
+  border-color: #313a48;
+}
+.demo-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.demo-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.demo-btn--primary {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: #17120a;
+  font-weight: 600;
+}
+.demo-btn--primary:hover:not(:disabled) {
+  background: #f6b955;
+  border-color: #f6b955;
+}
+.demo-btn--primary .demo-key {
+  background: rgba(23, 18, 10, 0.14);
+  border-color: rgba(23, 18, 10, 0.3);
+  color: #3a2c12;
+}
+
+.demo-root :focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+/*
+ * Scrub bar. The native range input carries keyboard + drag behaviour; the
+ * decorated track and the "moment" marker are painted behind it.
+ */
+.demo-scrub {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 32px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.demo-scrub::-webkit-slider-runnable-track {
+  height: 32px;
+  background: transparent;
+}
+.demo-scrub::-moz-range-track {
+  height: 32px;
+  background: transparent;
+}
+.demo-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 32px;
+  width: 4px;
+  border: 0;
+  border-radius: 0;
+  background: var(--stage-ink);
+  box-shadow: 0 0 0 1px var(--stage-bg);
+}
+.demo-scrub::-moz-range-thumb {
+  height: 32px;
+  width: 4px;
+  border: 0;
+  border-radius: 0;
+  background: var(--stage-ink);
+  box-shadow: 0 0 0 1px var(--stage-bg);
+}
+.demo-scrub:focus-visible {
+  outline: none;
+}
+.demo-scrub:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 2px var(--stage-bg), 0 0 0 4px var(--signal);
+}
+.demo-scrub:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 2px var(--stage-bg), 0 0 0 4px var(--signal);
+}
+.demo-scrub:disabled {
+  cursor: not-allowed;
+}
+.demo-scrub:disabled::-webkit-slider-thumb {
+  background: var(--stage-ink-3);
+}
+.demo-scrub:disabled::-moz-range-thumb {
+  background: var(--stage-ink-3);
+}
+
+/* Loading skeleton. Shaped like the stage it replaces, not a spinner. */
+.demo-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--stage-panel) 0%,
+    var(--stage-raise) 50%,
+    var(--stage-panel) 100%
+  );
+  background-size: 300% 100%;
+  border-radius: var(--r);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .demo-skeleton {
+    animation: demo-sheen 1.8s ease-in-out infinite;
+  }
+}
+@keyframes demo-sheen {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Act change and beat change are the only content transitions on the screen. */
+.demo-swap {
+  animation: demo-rise 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes demo-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-root *,
+  .demo-root *::before,
+  .demo-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Payoff rail slots.
+ *
+ * The checklist and the ledger each get half the rail and scroll their own
+ * rows, because the rail itself must never scroll: act 2's punchline is the
+ * ledger reading "no refund recorded", and nobody scrolls a side rail during a
+ * talk. The fade at the foot of a slot is the only cue that there is more.
+ *
+ * Below 1280 the rail is a horizontal strip under the stage, where the panels
+ * take their natural height and neither rule applies.
+ */
+.demo-scrollbox {
+  position: relative;
+  min-height: 0;
+}
+.demo-rail-slot {
+  min-height: 0;
+}
+
+@media (min-width: 1280px) {
+  .demo-scrollbox {
+    flex: 1 1 0;
+  }
+  .demo-scrollbox::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 2.25rem;
+    background: linear-gradient(to top, var(--stage-panel), transparent);
+    pointer-events: none;
+  }
+  .demo-rail-slot {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--stage-line) transparent;
+  }
+  .demo-rail-slot::-webkit-scrollbar {
+    width: 8px;
+  }
+  .demo-rail-slot::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .demo-rail-slot::-webkit-scrollbar-thumb {
+    background: var(--stage-line);
+  }
+}

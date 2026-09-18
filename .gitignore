@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vendored skills from `npx skills add Leonxlnx/taste-skill` — installed per
+# machine, not part of the app. `.agents/skills/` holds the skill files,
+# `.claude/skills/` the symlinks Claude Code reads them through, and
+# skills-lock.json pins the versions. Reinstall with the command above rather
+# than committing ~13 third-party skill bundles into this repo.
+.agents/
+.claude/skills/
+skills-lock.json
+
+# private notes — resume / portfolio / interview prep, not repo content
+docs/resume-refund-agent.md

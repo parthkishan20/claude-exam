@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import Chat from "@/components/Chat";
@@ -32,7 +33,13 @@ export default function Home() {
       <header className="flex items-center gap-3 border-b border-slate-200 px-4 py-2.5">
         <h1 className="text-sm font-semibold">Refund-Support Agent</h1>
         <span className="text-xs text-slate-400">playground</span>
-        <span className="ml-auto font-mono text-[11px] text-slate-400">{sessionId}</span>
+        <Link
+          href="/demo"
+          className="ml-auto rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+        >
+          Guided demo &rarr;
+        </Link>
+        <span className="font-mono text-[11px] text-slate-400">{sessionId}</span>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col min-[1100px]:flex-row">

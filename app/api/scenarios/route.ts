@@ -14,7 +14,7 @@
  * or escalations left behind by an earlier one — that isolation is what makes
  * the suite repeatable.
  */
-import { snapshotWorld, type Assertion } from "@/evals/assertions";
+import { snapshotWorld, type Assertion, type EvalWorld } from "@/evals/assertions";
 import { SCENARIOS } from "@/evals/scenarios";
 import {
   credentialsAvailable,
@@ -50,6 +50,8 @@ export interface ScenarioRunResult {
   passed: boolean;
   finalText: string;
   turns: number;
+  /** Store snapshot AFTER the run: refunds, credits, escalations. */
+  world: EvalWorld | null;
   error: string | null;
 }
 
@@ -103,6 +105,7 @@ export async function POST(req: Request): Promise<Response> {
           passed: assertions.every((a) => a.pass),
           finalText: run.finalText,
           turns: run.events.filter((e) => e.t === "turn_start").length,
+          world: run.world,
           error: SCRIPTS[scenario.id] ? null : MISSING_CREDENTIALS_MESSAGE,
         } satisfies ScenarioRunResult,
         { headers: { "Cache-Control": "no-store" } },
@@ -120,6 +123,7 @@ export async function POST(req: Request): Promise<Response> {
           passed: false,
           finalText: "",
           turns: 0,
+          world: null,
           error: describeError(err),
         } satisfies ScenarioRunResult,
         { headers: { "Cache-Control": "no-store" } },
@@ -170,6 +174,7 @@ export async function POST(req: Request): Promise<Response> {
       passed: !error && assertions.every((a) => a.pass),
       finalText,
       turns,
+      world,
       error,
     } satisfies ScenarioRunResult,
     { headers: { "Cache-Control": "no-store" } },
