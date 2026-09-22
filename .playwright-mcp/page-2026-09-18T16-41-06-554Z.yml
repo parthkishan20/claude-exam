@@ -1,0 +1,59 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - paragraph [ref=e6]: Demo mode
+          - heading "Watching the refund agent get told no" [level=1] [ref=e7]
+          - paragraph [ref=e8]: Five acts, each replaying one canonical scenario one event at a time.
+        - generic [ref=e9]:
+          - generic [ref=e10]:
+            - group "Run mode" [ref=e12]:
+              - button "replay" [pressed] [ref=e13]
+              - button "live" [disabled] [ref=e14]
+            - button "Shortcuts ?" [ref=e15]:
+              - text: Shortcuts
+              - generic [ref=e16]: "?"
+          - paragraph [ref=e17]: "Replay scripts the model's turn only. The hook, the retries, the handlers and the store are the shipping code. Live is unavailable on this hosted copy: it is a static site with no server to call the API from."
+      - generic [ref=e18]:
+        - generic [ref=e19]: Takeaway
+        - paragraph
+    - generic [ref=e20]:
+      - complementary [ref=e21]:
+        - navigation "Demo agenda" [ref=e22]:
+          - heading "Run of show" [level=2] [ref=e24]
+          - list [ref=e25]
+          - paragraph [ref=e27]:
+            - text: Press
+            - generic [ref=e28]: "?"
+            - text: for the full key map.
+      - main [ref=e29]:
+        - paragraph [ref=e35]: Loading the act.
+      - complementary "What this act proved" [ref=e36]
+    - region "Playback transport" [ref=e39]:
+      - slider "Position in trace" [disabled] [ref=e41]: "-1"
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - button "Replay act Space" [disabled] [ref=e44]:
+            - text: Replay act
+            - generic [ref=e45]: Space
+          - button "Back ←" [disabled] [ref=e46]:
+            - text: Back
+            - generic [ref=e47]: ←
+          - button "Step →" [disabled] [ref=e48]:
+            - text: Step
+            - generic [ref=e49]: →
+          - button "Restart R" [disabled] [ref=e50]:
+            - text: Restart
+            - generic [ref=e51]: R
+        - generic [ref=e52]:
+          - paragraph [ref=e53]: No beats
+          - paragraph [ref=e54]: 0 events
+        - generic [ref=e55]:
+          - generic [ref=e56]: Speed
+          - group "Playback speed" [ref=e57]:
+            - button "0.5x" [disabled] [ref=e58]
+            - button "1x" [disabled] [pressed] [ref=e59]
+            - button "2x" [disabled] [ref=e60]
+            - button "4x" [disabled] [ref=e61]
+  - alert [ref=e62]
